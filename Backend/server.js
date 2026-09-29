@@ -17,7 +17,16 @@ app.use(express.json());
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
+const membershipPlanRoutes = require('./routes/membershipPlanRoutes');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const trainerRoutes = require('./routes/trainerRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
+
 app.use('/api/auth', authRoutes);
+app.use('/api/membership-plans', membershipPlanRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/trainers', trainerRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // Root Route
 app.get('/', (req, res) => {
