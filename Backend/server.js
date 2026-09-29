@@ -26,6 +26,7 @@ const workoutPlanRoutes = require('./routes/workoutPlanRoutes');
 const workoutPlanExerciseRoutes = require('./routes/workoutPlanExerciseRoutes');
 const workoutLogRoutes = require('./routes/workoutLogRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
+const progressRoutes = require('./routes/progressRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/membership-plans', membershipPlanRoutes);
@@ -37,6 +38,7 @@ app.use('/api/workout-plans', workoutPlanRoutes);
 app.use('/api/workout-plan-exercises', workoutPlanExerciseRoutes);
 app.use('/api/workout-logs', workoutLogRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/progress', progressRoutes);
 
 // Root Route
 app.get('/', (req, res) => {
