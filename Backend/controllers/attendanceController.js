@@ -4,6 +4,7 @@ const AttendanceQRSession = require('../models/AttendanceQRSession');
 const Subscription = require('../models/Subscription');
 const TrainerProfile = require('../models/TrainerProfile');
 const WorkoutPlan = require('../models/WorkoutPlan');
+const { notifyAttendanceRecorded } = require('../services/notificationService');
 
 // Haversine distance formula in meters
 function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
@@ -115,6 +116,8 @@ const checkIn = async (req, res) => {
       distanceFromGym: distance,
       qrSessionId: sessionId
     });
+
+    await notifyAttendanceRecorded(req.user.id, attendance._id, attendance.checkInTime.toISOString());
 
     res.status(201).json({
       success: true,

@@ -5,6 +5,7 @@ const TrainerProfile = require('../models/TrainerProfile');
 const WorkoutPlan = require('../models/WorkoutPlan');
 const WorkoutLog = require('../models/WorkoutLog');
 const Attendance = require('../models/Attendance');
+const { notifyGoalAchieved } = require('../services/notificationService');
 
 // Helper for BMI
 const calculateBMI = (weightKg, heightCm) => {
@@ -162,13 +163,19 @@ const updateGoal = async (req, res) => {
     if (!goal) return res.status(404).json({ success: false, message: 'Goal not found' });
     
     Object.assign(goal, req.body);
-    if (goal.targetValue && goal.currentValue !== undefined) {
+    let justAchieved = false;
+    if (goal.targetValue && goal.currentValue !== undefined && goal.status !== 'achieved') {
       if ((goal.startValue > goal.targetValue && goal.currentValue <= goal.targetValue) || 
           (goal.startValue < goal.targetValue && goal.currentValue >= goal.targetValue)) {
         goal.status = 'achieved';
+        justAchieved = true;
       }
     }
     await goal.save();
+
+    if (justAchieved) {
+      await notifyGoalAchieved(req.user.id, goal._id, goal.title || goal.goalType);
+    }
 
     res.status(200).json({ success: true, message: 'Goal updated', data: goal });
   } catch (error) {

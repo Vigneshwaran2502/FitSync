@@ -5,6 +5,7 @@ const Exercise = require('../models/Exercise');
 const User = require('../models/User');
 const TrainerProfile = require('../models/TrainerProfile');
 const Subscription = require('../models/Subscription');
+const { notifyWorkoutAssignment } = require('../services/notificationService');
 
 // @desc    Create workout plan
 // @route   POST /api/workout-plans
@@ -40,6 +41,8 @@ const createWorkoutPlan = async (req, res) => {
       trainerId: trainerProfile._id,
       endDate: end
     });
+
+    await notifyWorkoutAssignment(memberId, plan._id);
 
     res.status(201).json({ success: true, message: 'Workout plan created successfully', data: plan });
   } catch (error) {
