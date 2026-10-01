@@ -28,6 +28,7 @@ const workoutLogRoutes = require('./routes/workoutLogRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const progressRoutes = require('./routes/progressRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/membership-plans', membershipPlanRoutes);
@@ -41,6 +42,7 @@ app.use('/api/workout-logs', workoutLogRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Start Cron Jobs
 const startCronJobs = require('./cronJobs');

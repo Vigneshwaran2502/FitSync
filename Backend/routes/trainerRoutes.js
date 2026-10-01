@@ -23,6 +23,7 @@ router.use(protect);
 // Trainers
 router.post('/', roleMiddleware('admin'), createTrainerAccount);
 router.post('/profile', roleMiddleware('trainer'), createTrainerProfile);
+router.get('/my/members', roleMiddleware('trainer'), require('../controllers/trainerController').getMyAssignedMembers);
 router.get('/', getTrainers);
 router.put('/profile', roleMiddleware('trainer', 'admin'), updateTrainerProfile);
 

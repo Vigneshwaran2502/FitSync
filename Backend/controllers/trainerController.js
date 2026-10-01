@@ -2,6 +2,7 @@ const TrainerProfile = require('../models/TrainerProfile');
 const User = require('../models/User');
 const TrainerAvailability = require('../models/TrainerAvailability');
 const Appointment = require('../models/Appointment');
+const WorkoutPlan = require('../models/WorkoutPlan');
 const bcrypt = require('bcryptjs');
 
 // @desc    Admin creates a trainer account and profile
@@ -165,6 +166,32 @@ const getTrainerSchedule = async (req, res) => {
   }
 };
 
+// @desc    Get members assigned to this trainer (via appointments or workout plans)
+// @route   GET /api/trainers/my/members
+// @access  Private/Trainer
+const getMyAssignedMembers = async (req, res) => {
+  try {
+    const profile = await TrainerProfile.findOne({ userId: req.user.id });
+    if (!profile) return res.status(404).json({ success: false, message: 'Trainer profile not found' });
+
+    // Find all members who have appointments with this trainer
+    const appointments = await Appointment.find({ trainerId: profile._id }).select('memberId');
+    const plans = await WorkoutPlan.find({ trainerId: profile._id }).select('memberId');
+    
+    // Combine and deduplicate member IDs
+    const memberIds = [...new Set([
+      ...appointments.map(a => a.memberId.toString()),
+      ...plans.map(p => p.memberId.toString())
+    ])];
+
+    const members = await User.find({ _id: { $in: memberIds } }).select('name email phone profileImage');
+
+    res.status(200).json({ success: true, data: members });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createTrainerAccount,
   createTrainerProfile,
@@ -172,5 +199,6 @@ module.exports = {
   getTrainerById,
   updateTrainerProfile,
   deactivateTrainer,
-  getTrainerSchedule
+  getTrainerSchedule,
+  getMyAssignedMembers
 };
