@@ -1,20 +1,36 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# FitSync 🏋️‍♂️
 
-# Run and deploy your AI Studio app
+FitSync is a premium, state-of-the-art gym management and membership platform. It provides a beautiful, modern interface for gym members to manage their subscriptions, track fitness progress, and request services like membership freezing.
 
-This contains everything you need to run your app locally.
+## 🌟 Features
+* **Modern Aesthetic UI:** Built with React, TailwindCSS, and sleek micro-animations for a highly engaging user experience.
+* **Authentication & Authorization:** Secure JWT-based login with role-based access control (Members vs. Admin/Trainer).
+* **Membership Management:** Users can subscribe to tiers (Basic, Standard, Premium), renew plans, and request to freeze their accounts.
+* **Simulated Checkout:** A beautiful, fully custom "Simulated Razorpay" payment popup for easy testing and demonstrations without real payment credentials.
+* **REST API Backend:** A scalable Node.js/Express backend connected to MongoDB.
 
-View your app in AI Studio: https://ai.studio/apps/d31a936f-5c93-41c3-a91a-0450e50cf610
+## 🏗️ Project Structure
+The project is cleanly divided into two independent directories:
+* `/frontend` - React + Vite + TailwindCSS application.
+* `/backend` - Node.js + Express + MongoDB server.
 
-## Run Locally
+## 🚀 Getting Started
 
-**Prerequisites:**  Node.js
+### 1. Run the Backend
+Open a terminal and navigate to the backend folder:
+```bash
+cd backend
+npm install
+npm run dev
+```
 
+### 2. Run the Frontend
+Open a second terminal and navigate to the frontend folder:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛠️ Environment Variables
+Ensure you have a `.env` file in **both** the `/frontend` and `/backend` directories containing the necessary secrets (like MongoDB URI, JWT Secret, and Google Client IDs).
