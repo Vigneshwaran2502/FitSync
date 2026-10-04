@@ -1,0 +1,6 @@
+{
+  "name": "FitSync Fitness Management Platform",
+  "description": "Full-stack fitness center management platform with role-based dashboards for Admins, Trainers, and Members.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

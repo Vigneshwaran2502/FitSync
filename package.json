@@ -1,0 +1,8 @@
+{
+  "name": "fitsync-root",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install --prefix frontend && npm install --prefix backend",
+    "dev": "npm run dev --prefix backend & npm run dev --prefix frontend"
+  }
+}
