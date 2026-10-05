@@ -1,4 +1,4 @@
-import "dotenv/config";
+﻿import "dotenv/config";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createExpressApp } from "./app.js";
@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 async function startServer() {
   const portArgIndex = process.argv.indexOf("--port");
-  const PORT = portArgIndex !== -1 && process.argv[portArgIndex + 1] ? Number(process.argv[portArgIndex + 1]) : 5000;
+  let PORT = process.env.PORT || 5000; if (portArgIndex !== -1 && process.argv[portArgIndex + 1]) { PORT = Number(process.argv[portArgIndex + 1]); }
   const isProduction = process.env.NODE_ENV === "production";
   await connectDB();
   initializeCronJobs();
@@ -29,3 +29,4 @@ startServer().catch((err) => {
   console.error("[FitSync Server] Fatal error starting server:", err);
   process.exit(1);
 });
+
