@@ -1,0 +1,26 @@
+import apiClient from "./axios";
+const notificationApi = {
+  getNotifications: async (params) => {
+    const res = await apiClient.get("/notifications", { params });
+    return res.data;
+  },
+  markAsRead: async (id) => {
+    const res = await apiClient.put(`/notifications/${id}/read`);
+    return res.data;
+  },
+  markAllAsRead: async () => {
+    const res = await apiClient.put("/notifications/read-all");
+    return res.data;
+  },
+  deleteNotification: async (id) => {
+    const res = await apiClient.delete(`/notifications/${id}`);
+    return res.data;
+  },
+  broadcastAnnouncement: async (data) => {
+    const res = await apiClient.post("/notifications/broadcast", data);
+    return res.data;
+  }
+};
+export {
+  notificationApi
+};
