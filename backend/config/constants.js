@@ -11,8 +11,8 @@ const GYM_LOCATION = {
   formattedAddress: "Easwari Engineering College, Bharathi Salai, Ramapuram, Chennai, Tamil Nadu 600089, India",
   latitude: 13.0335,
   longitude: 80.1855,
-  maxAllowedDistanceMeters: 100
-  // 100 meters radius for strict GPS check-in verification
+  maxAllowedDistanceMeters: 1000
+  // 1000 meters (1km) radius for flexible campus Wi-Fi GPS check-in
 };
 export {
   GYM_LOCATION,
