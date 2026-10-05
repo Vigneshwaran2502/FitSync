@@ -1,6 +1,10 @@
 import axios from "axios";
 import { safeStorage } from "../utils/storage";
-const API_URL = (import.meta.env.VITE_API_URL || "/api").trim().replace(/\/$/, "");
+let rawApiUrl = (import.meta.env.VITE_API_URL || "/api").trim().replace(/\/$/, "");
+if (rawApiUrl.startsWith("http") && !rawApiUrl.endsWith("/api")) {
+  rawApiUrl += "/api";
+}
+const API_URL = rawApiUrl;
 const customFetchAdapter = async (config) => {
   const cleanBase = config.baseURL ? config.baseURL.replace(/\/$/, "") : "/api";
   const urlPath = config.url?.startsWith("/") ? config.url : `/${config.url || ""}`;
@@ -110,4 +114,5 @@ export {
   apiClient,
   stdin_default as default
 };
+
 
