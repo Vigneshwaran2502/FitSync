@@ -41,7 +41,7 @@ const Login = () => {
       if (res.token && res.user) {
         setAuth(res.token, res.user);
         const from = location.state?.from?.pathname || getRoleDashboardPath(res.user);
-        navigate(from, { replace: true });
+        setTimeout(() => navigate(from, { replace: true }), 0);
       }
     } catch (err) {
       let fallbackUser = null;
@@ -80,7 +80,7 @@ const Login = () => {
       if (fallbackUser && fallbackToken) {
         setAuth(fallbackToken, fallbackUser);
         const from = location.state?.from?.pathname || getRoleDashboardPath(fallbackUser);
-        navigate(from, { replace: true });
+        setTimeout(() => navigate(from, { replace: true }), 0);
       } else {
         setError(err.response?.data?.message || "Login failed. Try again.");
       }
@@ -107,7 +107,7 @@ const Login = () => {
       if (res.token && res.user) {
         setAuth(res.token, res.user);
         const from = location.state?.from?.pathname || getRoleDashboardPath(res.user);
-        navigate(from, { replace: true });
+        setTimeout(() => navigate(from, { replace: true }), 0);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Invalid email or password");
@@ -123,7 +123,7 @@ const Login = () => {
       if (res.token && res.user) {
         setAuth(res.token, res.user);
         const from = location.state?.from?.pathname || getRoleDashboardPath(res.user);
-        navigate(from, { replace: true });
+        setTimeout(() => navigate(from, { replace: true }), 0);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Invalid or expired OTP");
@@ -139,7 +139,7 @@ const Login = () => {
       if (res.token && res.user) {
         setAuth(res.token, res.user);
         const from = location.state?.from?.pathname || getRoleDashboardPath(res.user);
-        navigate(from, { replace: true });
+        setTimeout(() => navigate(from, { replace: true }), 0);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Google Login Failed");

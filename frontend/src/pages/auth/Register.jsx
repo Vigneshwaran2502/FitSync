@@ -47,7 +47,7 @@ const Register = () => {
       }
       if (res.token && res.user) {
         setAuth(res.token, res.user);
-        navigate(res.user?.onboardingCompleted === false ? "/member/onboarding" : "/member");
+        setTimeout(() => navigate(res.user?.onboardingCompleted === false ? "/member/onboarding" : "/member"), 0);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
@@ -62,7 +62,7 @@ const Register = () => {
       const res = await authApi.verifyOtp(email, otp);
       if (res.token && res.user) {
         setAuth(res.token, res.user);
-        navigate(res.user?.onboardingCompleted === false ? "/member/onboarding" : "/member", { replace: true });
+        setTimeout(() => navigate(res.user?.onboardingCompleted === false ? "/member/onboarding" : "/member", { replace: true }), 0);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Invalid or expired OTP");

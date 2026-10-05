@@ -14,6 +14,7 @@ import {
   User as UserIcon,
   Search
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { geminiApi } from "../../api/geminiApi";
 const SUGGESTED_PROMPTS = [
   { text: "Form cues for Barbell Back Squat", taskType: "fast", search: false },
@@ -157,40 +158,7 @@ How can I help your training today?`,
     ]);
   };
   const activeRoleName = roles.find((r) => r.id === selectedRole)?.name || "FitSync Elite Coach";
-  const renderFormattedContent = (content) => {
-    return content.split("\n\n").map((paragraph, pIdx) => {
-      if (paragraph.startsWith("* ") || paragraph.startsWith("- ")) {
-        const items = paragraph.split("\n");
-        return <ul key={pIdx} className="list-disc list-inside space-y-1 my-1.5 pl-1">
-            {items.map((item, iIdx) => {
-          const cleaned = item.replace(/^[\*\-]\s+/, "");
-          return <li key={iIdx} className="text-xs leading-relaxed">
-                  <span dangerouslySetInnerHTML={{ __html: formatInline(cleaned) }} />
-                </li>;
-        })}
-          </ul>;
-      }
-      if (/^\d+\.\s/.test(paragraph)) {
-        const items = paragraph.split("\n");
-        return <ol key={pIdx} className="list-decimal list-inside space-y-1 my-1.5 pl-1">
-            {items.map((item, iIdx) => {
-          const cleaned = item.replace(/^\d+\.\s+/, "");
-          return <li key={iIdx} className="text-xs leading-relaxed">
-                  <span dangerouslySetInnerHTML={{ __html: formatInline(cleaned) }} />
-                </li>;
-        })}
-          </ol>;
-      }
-      return <p
-        key={pIdx}
-        className="text-xs leading-relaxed my-1"
-        dangerouslySetInnerHTML={{ __html: formatInline(paragraph) }}
-      />;
-    });
-  };
-  const formatInline = (text) => {
-    return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\*(.*?)\*/g, "<em>$1</em>").replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-slate-100 font-mono text-[11px] rounded text-emerald-800">$1</code>');
-  };
+
   return <>
       {
     /* Floating Launcher Button - Styled as Landing Page Pill */
@@ -380,7 +348,28 @@ How can I help your training today?`,
                         {
       /* Message Content */
     }
-                        <div className="space-y-1">{renderFormattedContent(msg.content)}</div>
+                        <div className="space-y-2 text-xs leading-relaxed overflow-x-hidden">
+                          <ReactMarkdown
+                            components={{
+                              p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                              ul: ({ node, ...props }) => <ul className="list-disc list-outside ml-4 mb-2 space-y-1" {...props} />,
+                              ol: ({ node, ...props }) => <ol className="list-decimal list-outside ml-4 mb-2 space-y-1" {...props} />,
+                              li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                              strong: ({ node, ...props }) => <strong className="font-bold text-current" {...props} />,
+                              em: ({ node, ...props }) => <em className="italic text-current" {...props} />,
+                              code: ({ node, inline, ...props }) => (
+                                <code
+                                  className={`font-mono text-[11px] ${
+                                    inline ? "px-1 py-0.5 bg-black/10 dark:bg-white/10 rounded" : "block p-2 bg-black/10 dark:bg-white/10 rounded-md overflow-x-auto my-2"
+                                  }`}
+                                  {...props}
+                                />
+                              )
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
 
                         {
       /* Search Grounding Queries if any */
