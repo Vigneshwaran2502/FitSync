@@ -1,9 +1,8 @@
 import axios from "axios";
 import { safeStorage } from "../utils/storage";
-const rawApiUrl = (import.meta.env.VITE_API_URL || "").trim();
-const API_URL = !rawApiUrl || rawApiUrl.includes("your-backend-app") || rawApiUrl.includes("onrender") ? "/api" : rawApiUrl;
+const API_URL = (import.meta.env.VITE_API_URL || "/api").trim().replace(/\/$/, "");
 const customFetchAdapter = async (config) => {
-  const cleanBase = config.baseURL && !config.baseURL.includes("your-backend-app") && !config.baseURL.includes("onrender") ? config.baseURL.replace(/\/$/, "") : "/api";
+  const cleanBase = config.baseURL ? config.baseURL.replace(/\/$/, "") : "/api";
   const urlPath = config.url?.startsWith("/") ? config.url : `/${config.url || ""}`;
   let finalUrl = config.url?.startsWith("http://") || config.url?.startsWith("https://") ? config.url : `${cleanBase}${urlPath}`;
   if (config.params) {
@@ -111,3 +110,4 @@ export {
   apiClient,
   stdin_default as default
 };
+
