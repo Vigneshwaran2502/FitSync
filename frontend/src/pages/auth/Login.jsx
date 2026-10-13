@@ -16,16 +16,31 @@ const Login = () => {
   const [requiresOtp, setRequiresOtp] = useState(false);
   const [otp, setOtp] = useState("");
   const getRoleDashboardPath = (user) => {
-    switch (user.role) {
+    switch (user?.role) {
       case "admin":
-        return "/admin";
+        return "/admin/dashboard";
       case "trainer":
-        return "/trainer";
+        return "/trainer/dashboard";
       case "member":
-        return user.onboardingCompleted === false ? "/member/onboarding" : "/member";
+        return user.onboardingCompleted === false ? "/member/onboarding" : "/member/dashboard";
       default:
         return "/";
     }
+  };
+
+  const resolveTargetDestination = (user) => {
+    const requestedPath = location.state?.from?.pathname;
+    if (requestedPath && typeof requestedPath === "string") {
+      const rolePrefix = `/${user.role}`;
+      if (
+        requestedPath.startsWith(rolePrefix) &&
+        !requestedPath.includes("/unauthorized") &&
+        !requestedPath.includes("/login")
+      ) {
+        return requestedPath;
+      }
+    }
+    return getRoleDashboardPath(user);
   };
   const handleInstantLogin = async (demoEmail, demoPass) => {
     try {
@@ -40,8 +55,8 @@ const Login = () => {
       }
       if (res.token && res.user) {
         setAuth(res.token, res.user);
-        const from = location.state?.from?.pathname || getRoleDashboardPath(res.user);
-        setTimeout(() => navigate(from, { replace: true }), 0);
+        const destination = getRoleDashboardPath(res.user);
+        navigate(destination, { replace: true });
       }
     } catch (err) {
       let fallbackUser = null;
@@ -79,8 +94,8 @@ const Login = () => {
       }
       if (fallbackUser && fallbackToken) {
         setAuth(fallbackToken, fallbackUser);
-        const from = location.state?.from?.pathname || getRoleDashboardPath(fallbackUser);
-        setTimeout(() => navigate(from, { replace: true }), 0);
+        const destination = getRoleDashboardPath(fallbackUser);
+        navigate(destination, { replace: true });
       } else {
         setError(err.response?.data?.message || "Login failed. Try again.");
       }
@@ -106,8 +121,8 @@ const Login = () => {
       }
       if (res.token && res.user) {
         setAuth(res.token, res.user);
-        const from = location.state?.from?.pathname || getRoleDashboardPath(res.user);
-        setTimeout(() => navigate(from, { replace: true }), 0);
+        const destination = resolveTargetDestination(res.user);
+        navigate(destination, { replace: true });
       }
     } catch (err) {
       setError(err.response?.data?.message || "Invalid email or password");
@@ -122,8 +137,8 @@ const Login = () => {
       const res = await authApi.verifyOtp(email, otp);
       if (res.token && res.user) {
         setAuth(res.token, res.user);
-        const from = location.state?.from?.pathname || getRoleDashboardPath(res.user);
-        setTimeout(() => navigate(from, { replace: true }), 0);
+        const destination = resolveTargetDestination(res.user);
+        navigate(destination, { replace: true });
       }
     } catch (err) {
       setError(err.response?.data?.message || "Invalid or expired OTP");
@@ -138,8 +153,8 @@ const Login = () => {
       const res = await authApi.googleLogin(credentialResponse.credential);
       if (res.token && res.user) {
         setAuth(res.token, res.user);
-        const from = location.state?.from?.pathname || getRoleDashboardPath(res.user);
-        setTimeout(() => navigate(from, { replace: true }), 0);
+        const destination = resolveTargetDestination(res.user);
+        navigate(destination, { replace: true });
       }
     } catch (err) {
       setError(err.response?.data?.message || "Google Login Failed");
