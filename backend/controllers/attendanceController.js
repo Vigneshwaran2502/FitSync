@@ -128,6 +128,7 @@ async function checkIn(req, res) {
         GYM_LOCATION.maxAllowedDistanceMeters
       );
       calculatedDistance = distance;
+      console.log(`[GPS CheckIn] User: (${latitude}, ${longitude}) | Gym: (${GYM_LOCATION.latitude}, ${GYM_LOCATION.longitude}) | Distance: ${distance}m | Allowed: ${GYM_LOCATION.maxAllowedDistanceMeters}m | Valid: ${valid}`);
       if (!valid) {
         return res.status(400).json({
           message: `Location check failed: You are ${distance}m away from ${GYM_LOCATION.name}. You must be within ${GYM_LOCATION.maxAllowedDistanceMeters}m to check in.`

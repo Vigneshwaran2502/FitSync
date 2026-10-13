@@ -107,7 +107,7 @@ const MemberAttendance = () => {
           message: `Location permission denied (${err.message}). Please allow GPS permission in your browser or test with simulated coordinates below.`
         });
       },
-      { timeout: 1e4, enableHighAccuracy: true }
+      { timeout: 15000, enableHighAccuracy: true, maximumAge: 0 }
     );
   };
   const handleCheckOut = async () => {

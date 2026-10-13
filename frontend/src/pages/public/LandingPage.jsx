@@ -163,7 +163,7 @@ const LandingPage = () => {
       a: "All passwords are encrypted with bcrypt, sensitive tokens use stateless signed JWTs, and all API interactions are safeguarded by HTTPS and strict role-based access control (RBAC). Data is never shared or exported to third parties."
     }
   ];
-  return <div className="min-h-screen bg-[#FAFAF8] dark:bg-[#07080d] text-[#15131D] dark:text-slate-100 font-sans selection:bg-purple-600 selection:text-white antialiased overflow-x-hidden theme-transition">
+  return <div className="min-h-screen bg-[#FAFAF8] dark:bg-[#07080d] text-[#15131D] dark:text-slate-100 font-sans selection:bg-purple-600 selection:text-white antialiased theme-transition">
       {
     /* ========================================================================= */
   }

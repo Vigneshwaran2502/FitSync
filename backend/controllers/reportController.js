@@ -24,8 +24,8 @@ async function getAdminDashboardStats(req, res) {
       recentAttendance
     ] = await Promise.all([
       User.countDocuments({ role: "member" }),
-      User.countDocuments({ role: "member", status: "active" }),
-      User.countDocuments({ role: "trainer", status: "active" }),
+      User.countDocuments({ role: "member", status: { $ne: "inactive" } }),
+      User.countDocuments({ role: "trainer", status: { $ne: "inactive" } }),
       Subscription.countDocuments({ status: "active" }),
       Subscription.find().populate("planId", "name tier price"),
       Attendance.find({ date: todayStr }),

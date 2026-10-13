@@ -195,11 +195,17 @@ async function deleteUser(req, res) {
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
-    user.status = "inactive";
-    await user.save();
-    res.json({ message: `User ${user.name} has been deactivated.` });
+    await Promise.all([
+      Subscription.deleteMany({ userId: user._id }),
+      Attendance.deleteMany({ userId: user._id }),
+      FitnessProfile.deleteMany({ userId: user._id }),
+      WorkoutPlan.deleteMany({ memberId: user._id }),
+      Notification.deleteMany({ userId: user._id }),
+      User.findByIdAndDelete(user._id)
+    ]);
+    res.json({ message: `User ${user.name} has been permanently removed from the platform.` });
   } catch (err) {
-    res.status(500).json({ message: err.message || "Error deactivating user." });
+    res.status(500).json({ message: err.message || "Error removing user." });
   }
 }
 async function assignTrainer(req, res) {

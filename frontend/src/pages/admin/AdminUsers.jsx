@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Filter, Eye, UserX, UserCheck, Dumbbell, CheckCircle2, UserPlus } from "lucide-react";
+import { Search, Plus, Filter, Eye, UserX, UserCheck, Dumbbell, CheckCircle2, UserPlus, Trash2 } from "lucide-react";
 import { userApi } from "../../api/userApi";
 import { trainerApi } from "../../api/trainerApi";
 import { Badge } from "../../components/common/Badge";
@@ -7,35 +7,7 @@ import { Modal } from "../../components/common/Modal";
 import { LoadingSpinner } from "../../components/common/LoadingSpinner";
 import { EmptyState } from "../../components/common/EmptyState";
 const AdminUsers = ({ defaultRole }) => {
-  const [users, setUsers] = useState([
-    {
-      _id: "seed-alex",
-      name: "Alex Chen",
-      email: "alex@fitsync.com",
-      phone: "+1 (555) 048-9102",
-      role: "member",
-      status: "active",
-      createdAt: "2026-09-01T00:00:00.000Z"
-    },
-    {
-      _id: "seed-marcus",
-      name: "Marcus Vance",
-      email: "marcus@fitsync.com",
-      phone: "+1 (555) 024-8891",
-      role: "trainer",
-      status: "active",
-      createdAt: "2026-08-15T00:00:00.000Z"
-    },
-    {
-      _id: "seed-elena",
-      name: "Elena Rostova",
-      email: "elena@fitsync.com",
-      phone: "+1 (555) 039-4412",
-      role: "trainer",
-      status: "active",
-      createdAt: "2026-08-15T00:00:00.000Z"
-    }
-  ]);
+  const [users, setUsers] = useState([]);
   const [trainers, setTrainers] = useState([]);
   const [roleFilter, setRoleFilter] = useState(defaultRole || "all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -51,6 +23,15 @@ const AdminUsers = ({ defaultRole }) => {
   const [selectedTrainerId, setSelectedTrainerId] = useState("");
   const [isAssigning, setIsAssigning] = useState(false);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  useEffect(() => {
+    setRoleFilter(defaultRole || "all");
+    setCoachFilter("all");
+    setSearch("");
+    setFormData((prev) => ({
+      ...prev,
+      role: defaultRole || "member"
+    }));
+  }, [defaultRole]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -71,7 +52,8 @@ const AdminUsers = ({ defaultRole }) => {
   const fetchUsers = async (retries = 2) => {
     try {
       const params = {};
-      if (roleFilter !== "all") params.role = roleFilter;
+      const activeRole = roleFilter !== "all" ? roleFilter : (defaultRole && defaultRole !== "all" ? defaultRole : "all");
+      if (activeRole !== "all") params.role = activeRole;
       if (statusFilter !== "all") params.status = statusFilter;
       if (search) params.search = search;
       const res = await userApi.getUsers(params);
@@ -91,7 +73,7 @@ const AdminUsers = ({ defaultRole }) => {
   useEffect(() => {
     fetchUsers();
     fetchTrainers();
-  }, [roleFilter, statusFilter]);
+  }, [defaultRole, roleFilter, statusFilter]);
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchUsers();
@@ -153,6 +135,19 @@ const AdminUsers = ({ defaultRole }) => {
       alert(err.response?.data?.message || "Error assigning trainer");
     } finally {
       setIsAssigning(false);
+    }
+  };
+    const handleDeleteUser = async (user) => {
+    if (!window.confirm(`Are you sure you want to remove ${user.name} (${user.email}) from the platform? This will permanently delete their account.`)) {
+      return;
+    }
+    try {
+      await userApi.deleteUser(user._id);
+      setUsers((prev) => prev.filter((u) => u._id !== user._id));
+      setFeedback(`User ${user.name} has been removed successfully.`);
+      setTimeout(() => setFeedback(null), 4e3);
+    } catch (err) {
+      alert(err.response?.data?.message || "Error removing user");
     }
   };
   const handleToggleStatus = async (user) => {
@@ -423,6 +418,13 @@ const AdminUsers = ({ defaultRole }) => {
       title={u.status === "active" ? "Deactivate Account" : "Activate Account"}
     >
                           {u.status === "active" ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(u)}
+                          className="p-2 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
+                          title="Remove user from platform"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
                     </tr>;
