@@ -112,7 +112,9 @@ async function getTrainerDashboardStats(req, res) {
       activePlans,
       todayAppointments,
       upcomingAppointments,
-      assignedPlans,
+      assignedPlanMembers,
+      assignedProfileMembers,
+      assignedAppointmentMembers,
       recentLogs
     ] = await Promise.all([
       WorkoutPlan.countDocuments({ trainerId, status: "active" }),
@@ -122,10 +124,13 @@ async function getTrainerDashboardStats(req, res) {
         date: { $gte: todayStr },
         status: { $in: ["pending", "confirmed"] }
       }).populate("memberId", "name email phone").sort({ date: 1, startTime: 1 }).limit(5),
-      WorkoutPlan.find({ trainerId }).populate("memberId", "name email").distinct("memberId"),
+      WorkoutPlan.find({ trainerId }).distinct("memberId"),
+      FitnessProfile.find({ assignedTrainerId: trainerId }).distinct("userId"),
+      Appointment.find({ trainerId }).distinct("memberId"),
       WorkoutLog.find().populate("exerciseId", "name muscleGroup").populate("memberId", "name email").sort({ date: -1, createdAt: -1 }).limit(6)
     ]);
-    const assignedMembersCount = assignedPlans.length;
+    const allAssignedIds = Array.from(new Set([...assignedPlanMembers, ...assignedProfileMembers, ...assignedAppointmentMembers].map(String)));
+    const assignedMembersCount = allAssignedIds.length;
     res.json({
       cards: {
         assignedMembersCount,

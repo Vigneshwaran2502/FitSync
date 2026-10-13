@@ -13,7 +13,11 @@ async function authenticateToken(req, res, next) {
     }
     if (token.startsWith("fitsync_demo_")) {
       const demoRole = token.replace("fitsync_demo_", "");
-      const demoUser = await User.findOne({ role: demoRole }).select("-password");
+      let demoQuery = { role: demoRole };
+      if (demoRole === "trainer") demoQuery = { email: "marcus@fitsync.com" };
+      else if (demoRole === "admin") demoQuery = { email: "admin@fitsync.com" };
+      else if (demoRole === "member") demoQuery = { email: "alex@fitsync.com" };
+      const demoUser = await User.findOne(demoQuery).select("-password");
       if (demoUser) {
         req.user = demoUser;
         return next();

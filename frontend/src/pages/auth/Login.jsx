@@ -63,7 +63,7 @@ const Login = () => {
       let fallbackToken = "";
       if (demoEmail.includes("admin")) {
         fallbackUser = {
-          id: "6abe6ce544e3d17d8e93c304",
+          id: "6abbd5e71d278ecfd7977b3e",
           name: "FitSync Director (Admin)",
           email: "admin@fitsync.com",
           role: "admin",
@@ -73,7 +73,7 @@ const Login = () => {
         fallbackToken = "fitsync_demo_admin";
       } else if (demoEmail.includes("trainer") || demoEmail.includes("marcus")) {
         fallbackUser = {
-          id: "6abe6ce544e3d17d8e93c305",
+          id: "6ac20a08ea3f407bca685d5c",
           name: "Marcus Vance",
           email: "marcus@fitsync.com",
           role: "trainer",
@@ -83,7 +83,7 @@ const Login = () => {
         fallbackToken = "fitsync_demo_trainer";
       } else if (demoEmail.includes("member") || demoEmail.includes("alex")) {
         fallbackUser = {
-          id: "6abe6ce544e3d17d8e93c307",
+          id: "6ac20a08ea3f407bca685d5d",
           name: "Alex Chen",
           email: "alex@fitsync.com",
           role: "member",
