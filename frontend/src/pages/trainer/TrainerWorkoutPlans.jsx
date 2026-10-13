@@ -3,6 +3,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { workoutApi } from "../../api/workoutApi";
 import { exerciseApi } from "../../api/exerciseApi";
 import { userApi } from "../../api/userApi";
+import { trainerApi } from "../../api/trainerApi";
 import { Badge } from "../../components/common/Badge";
 import { Modal } from "../../components/common/Modal";
 import { LoadingSpinner } from "../../components/common/LoadingSpinner";
@@ -25,16 +26,47 @@ const TrainerWorkoutPlans = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const [plansRes, exercisesRes, membersRes] = await Promise.all([
-        workoutApi.getWorkoutPlans(),
-        exerciseApi.getExercises(),
-        userApi.getUsers({ role: "member", limit: 100 })
+      const [plansRes, exercisesRes, membersRes, assignedRes] = await Promise.all([
+        workoutApi.getWorkoutPlans().catch((err) => {
+          console.warn("Could not fetch workout plans:", err);
+          return { plans: [] };
+        }),
+        exerciseApi.getExercises().catch((err) => {
+          console.warn("Could not fetch exercises:", err);
+          return { exercises: [] };
+        }),
+        userApi.getUsers({ role: "member", limit: 100 }).catch((err) => {
+          console.warn("Could not fetch all users:", err);
+          return { users: [] };
+        }),
+        trainerApi.getAssignedMembers().catch((err) => {
+          console.warn("Could not fetch assigned members:", err);
+          return { members: [] };
+        })
       ]);
+
       setPlans(plansRes.plans || []);
       setExercisesList(exercisesRes.exercises || []);
-      setMembersList(membersRes.users || []);
+
+      // Deduplicate and prioritize assigned coaching clients
+      const memberMap = new Map();
+      const assigned = assignedRes.members || [];
+      const allMembers = membersRes.users || [];
+
+      assigned.forEach((m) => {
+        if (m && m._id) memberMap.set(m._id.toString(), { ...m, isAssigned: true });
+      });
+
+      allMembers.forEach((m) => {
+        if (m && m._id && !memberMap.has(m._id.toString())) {
+          memberMap.set(m._id.toString(), { ...m, isAssigned: false });
+        }
+      });
+
+      const mergedMembers = Array.from(memberMap.values());
+      setMembersList(mergedMembers);
     } catch (err) {
-      console.error(err);
+      console.error("fetchData error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -45,7 +77,8 @@ const TrainerWorkoutPlans = () => {
   const handleOpenCreate = () => {
     setEditingPlan(null);
     setFormName("");
-    setFormMember(membersList[0]?._id || "");
+    const defaultMemberId = membersList.find((m) => m.isAssigned)?._id || membersList[0]?._id || "";
+    setFormMember(defaultMemberId);
     setFormGoal("");
     setFormDifficulty("Intermediate");
     setFormDuration(4);
@@ -223,11 +256,18 @@ const TrainerWorkoutPlans = () => {
               <select
     value={formMember}
     onChange={(e) => setFormMember(e.target.value)}
+    required
     className="w-full px-3.5 py-2.5 border border-[#E8E5EE] dark:border-slate-800 rounded-xl bg-[#F8F7FA] dark:bg-slate-900 text-[#15131D] dark:text-white focus:outline-hidden focus:border-purple-600"
   >
-                {membersList.map((m) => <option key={m._id} value={m._id}>
-                    {m.name} ({m.email})
-                  </option>)}
+                {membersList.length === 0 ? (
+                  <option value="" disabled>No client athletes found</option>
+                ) : (
+                  membersList.map((m) => (
+                    <option key={m._id} value={m._id}>
+                      {m.isAssigned ? "★ Assigned: " : ""}{m.name} ({m.email})
+                    </option>
+                  ))
+                )}
               </select>
             </div>
           </div>
@@ -291,11 +331,18 @@ const TrainerWorkoutPlans = () => {
                     <select
     value={ex.exerciseId}
     onChange={(e) => handleExerciseChange(idx, "exerciseId", e.target.value)}
+    required
     className="flex-1 px-3 py-1.5 border border-[#E8E5EE] dark:border-slate-800 rounded-lg bg-white dark:bg-slate-950 text-[#15131D] dark:text-white font-medium"
   >
-                      {exercisesList.map((el) => <option key={el._id} value={el._id}>
-                          {el.name} ({el.muscleGroup})
-                        </option>)}
+                      {exercisesList.length === 0 ? (
+                        <option value="" disabled>No movements loaded</option>
+                      ) : (
+                        exercisesList.map((el) => (
+                          <option key={el._id} value={el._id}>
+                            {el.name} ({el.muscleGroup})
+                          </option>
+                        ))
+                      )}
                     </select>
                     <select
     value={ex.dayOfWeek}

@@ -11,7 +11,7 @@ import { authenticateToken } from "../middleware/auth.js";
 import { authorizeRoles } from "../middleware/role.js";
 const router = Router();
 router.use(authenticateToken);
-router.get("/", authorizeRoles("admin"), getUsers);
+router.get("/", authorizeRoles("admin", "trainer"), getUsers);
 router.get("/:id", authorizeRoles("admin", "trainer"), getUserById);
 router.post("/", authorizeRoles("admin"), createUser);
 router.put("/:id", authorizeRoles("admin"), updateUser);
