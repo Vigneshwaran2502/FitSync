@@ -146,7 +146,7 @@ async function getAdminReports(req, res) {
     const { reportType = "membership" } = req.query;
     const [members, subscriptions, attendance, plans, logs] = await Promise.all([
       User.find({ role: "member" }).select("name email phone status createdAt"),
-      Subscription.find().populate("userId", "name email").populate("planId", "name price durationMonths"),
+      Subscription.find().populate("userId member", "name email").populate("planId membershipPlan", "name price durationMonths"),
       Attendance.find().populate("userId", "name email").sort({ date: -1 }).limit(100),
       MembershipPlan.find(),
       WorkoutLog.find().populate("exerciseId", "name muscleGroup").populate("memberId", "name")
@@ -156,7 +156,18 @@ async function getAdminReports(req, res) {
       subscriptionsCount: subscriptions.length,
       attendanceCount: attendance.length,
       plans,
-      recentSubscriptions: subscriptions.slice(0, 20),
+      recentSubscriptions: subscriptions.map(s => {
+        const obj = s.toObject ? s.toObject() : s;
+        const user = obj.userId || obj.member || null;
+        const plan = obj.planId || obj.membershipPlan || null;
+        return {
+          ...obj,
+          userId: user,
+          planId: plan,
+          paymentAmount: obj.paymentAmount !== undefined ? obj.paymentAmount : (obj.pricePaid || 0),
+          endDate: obj.endDate || obj.currentEndDate || obj.originalEndDate || obj.startDate
+        };
+      }).slice(0, 20),
       recentAttendance: attendance.slice(0, 25),
       membersList: members
     });

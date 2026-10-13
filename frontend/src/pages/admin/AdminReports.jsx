@@ -156,16 +156,16 @@ const AdminReports = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                     {reportData.recentSubscriptions.map((s) => <tr key={s._id} className="hover:bg-purple-50/20 dark:hover:bg-white/[0.02] transition-colors">
-                        <td className="px-6 py-3.5 font-bold text-[#15131D] dark:text-white">{s.userId?.name}</td>
-                        <td className="px-6 py-3.5 text-[#686476] dark:text-slate-300">{s.planId?.name}</td>
+                        <td className="px-6 py-3.5 font-bold text-[#15131D] dark:text-white">{s.userId?.name || s.member?.name || (s.userId ? "Gym Member" : "Enrolled Member")}</td>
+                        <td className="px-6 py-3.5 text-[#686476] dark:text-slate-300">{s.planId?.name || s.membershipPlan?.name || "Standard Membership"}</td>
                         <td className="px-6 py-3.5 font-mono font-black tabular-nums text-purple-600 dark:text-purple-400">
-                          ${s.paymentAmount}
+                          ${s.paymentAmount !== undefined && s.paymentAmount !== null ? s.paymentAmount : (s.pricePaid || 0)}
                         </td>
                         <td className="px-6 py-3.5 text-[#686476] dark:text-slate-400 tabular-nums">
                           {new Date(s.startDate).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-3.5 text-[#686476] dark:text-slate-400 tabular-nums">
-                          {new Date(s.endDate).toLocaleDateString()}
+                          {s.endDate || s.currentEndDate ? new Date(s.endDate || s.currentEndDate).toLocaleDateString() : "—"}
                         </td>
                         <td className="px-6 py-3.5">
                           <Badge status={s.status} />

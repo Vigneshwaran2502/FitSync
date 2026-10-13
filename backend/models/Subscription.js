@@ -1,10 +1,18 @@
 import mongoose, { Schema } from "mongoose";
 const SubscriptionSchema = new Schema(
   {
+    member: {
+      type: Schema.Types.ObjectId,
+      ref: "User"
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true
+    },
+    membershipPlan: {
+      type: Schema.Types.ObjectId,
+      ref: "MembershipPlan"
     },
     planId: {
       type: Schema.Types.ObjectId,
@@ -15,6 +23,12 @@ const SubscriptionSchema = new Schema(
       type: Date,
       required: true,
       default: Date.now
+    },
+    currentEndDate: {
+      type: Date
+    },
+    originalEndDate: {
+      type: Date
     },
     endDate: {
       type: Date,
@@ -43,6 +57,9 @@ const SubscriptionSchema = new Schema(
       type: String,
       enum: ["paid", "pending", "failed"],
       default: "paid"
+    },
+    pricePaid: {
+      type: Number
     },
     paymentAmount: {
       type: Number,
