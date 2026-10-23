@@ -1,3 +1,8 @@
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import express from "express";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -62,6 +67,14 @@ function createExpressApp() {
   app.use("/api/*", (req, res) => {
     res.status(404).json({ message: `API endpoint '${req.originalUrl}' not found.` });
   });
+
+  const frontendDist = path.join(__dirname, "../frontend/dist");
+  if (fs.existsSync(frontendDist)) {
+    app.use(express.static(frontendDist));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(frontendDist, "index.html"));
+    });
+  }
   app.use((err, req, res, next) => {
     console.error("[API Error]:", err);
     const statusCode = err.statusCode || 500;
